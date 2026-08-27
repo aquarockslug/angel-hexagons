@@ -30,13 +30,15 @@
 
 	class FishPiece extends HTMLElement {
 		static get observedAttributes() {
-			return ["ink", "fill", "border", "scale", "selected"];
+			return ["ink", "fill", "border", "scale", "selected", "played"];
 		}
 
 		constructor() {
 			super();
 			this.attachShadow({ mode: "open" });
 			this._fish = null;
+			this._vivus = null;
+			this._renderKey = "";
 		}
 
 		connectedCallback() {
@@ -44,8 +46,17 @@
 			this.render();
 		}
 
-		attributeChangedCallback() {
-			if (this.isConnected) this.render();
+		attributeChangedCallback(name) {
+			if (!this.isConnected) return;
+			// Selection is handled purely by CSS, so it doesn't need a re-render
+			// (and would otherwise re-trigger the fish animation on every click).
+			if (name === "selected") return;
+			// Playing the piece triggers the fish drawing animation.
+			if (name === "played") {
+				this.playFish();
+				return;
+			}
+			this.render();
 		}
 
 		ensureFish() {
@@ -59,7 +70,12 @@
 			const fill = this.getAttribute("fill") || "#fdf6e3";
 			const border = this.getAttribute("border") || "#c9a227";
 			const scale = parseFloat(this.getAttribute("scale") || "180");
-			const selected = this.hasAttribute("selected");
+
+			// Only rebuild + re-animate when something that changes the artwork or
+			// layout changes; selection toggles are resolved through CSS alone.
+			const key = `${ink}|${fill}|${border}|${scale}|${this._fish ? "f" : ""}`;
+			if (key === this._renderKey) return;
+			this._renderKey = key;
 
 			const clipId = `fish-clip-${clipCounter}`;
 			clipCounter++;
@@ -71,24 +87,52 @@
           :host { display:inline-block; width:${scale}px; height:${(scale * 320) / 520}px;
                   cursor:pointer; user-select:none; -webkit-user-select:none; }
           .piece { width:100%; height:100%; transition:transform 120ms ease, filter 120ms ease;
-                   filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+                    filter:drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
           :host(:hover) .piece { transform:translateY(-2px); }
           :host([selected]) .piece { filter:drop-shadow(0 0 6px ${border}) drop-shadow(0 2px 3px rgba(0,0,0,.25));
-                                     transform:translateY(-3px) scale(1.03); }
+                                      transform:translateY(-3px) scale(1.03); }
           svg { width:100%; height:100%; display:block; }
+          polygon.frame { stroke-width:5; }
+          :host([selected]) polygon.frame { stroke-width:8; }
         </style>
         <div class="piece">
           <svg viewBox="0 0 520 320" preserveAspectRatio="xMidYMid meet">
             <defs><clipPath id="${clipId}"><polygon points="${poly}"/></clipPath></defs>
             <g clip-path="url(#${clipId})">
-              <rect width="520" height="320" fill="${fill}"/>
+              <rect width="520" height="320" fill="${fill}" data-ignore="true"/>
               <path d="${d}" fill="none" stroke="${ink}" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round"/>
             </g>
-            <polygon points="${poly}" fill="none" stroke="${border}"
-                     stroke-width="${selected ? 8 : 5}" stroke-linejoin="round"/>
+            <polygon class="frame" points="${poly}" fill="none" stroke="${border}"
+                     stroke-linejoin="round" data-ignore="true"/>
           </svg>
         </div>`;
+
+			this.animateFish();
+		}
+
+		// Build the Vivus instance in manual mode: the fish path is hidden until
+		// the piece is played (see playFish). Pieces stay blank in the pile.
+		animateFish() {
+			if (typeof Vivus === "undefined") return;
+			if (this._vivus) {
+				this._vivus.destroy();
+				this._vivus = null;
+			}
+			const svg = this.shadowRoot.querySelector("svg");
+			if (!svg) return;
+			this._vivus = new Vivus(svg, {
+				type: "oneByOne",
+				duration: 120,
+				start: "manual",
+				ignoreInvisible: true,
+			});
+			// If the piece was already played before a re-render, redraw it.
+			if (this.hasAttribute("played")) this._vivus.play();
+		}
+
+		playFish() {
+			if (this._vivus) this._vivus.play();
 		}
 
 		click() {

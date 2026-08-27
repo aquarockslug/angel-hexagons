@@ -122,6 +122,7 @@ function startGame() {
 		});
 
 		positionFishPiece(el, hole);
+		el.setAttribute("played", "");
 	}
 
 	// Clicking the board places the top (selected) fish of the pile.
