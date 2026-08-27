@@ -48,7 +48,7 @@ function M.depends(game)
 end
 
 -- For each library entry that requests it (via a `browserify` field), run
--- browserify to produce a UMD standalone bundle exposing the module's exports
+-- browserify to produce a UMD standalone bundle e.worldPosing the module's exports
 -- under the given global `name`. The bundle is written to `browserify.out`.
 function M.browserify(game)
 	game.libraries = game.libraries or {}

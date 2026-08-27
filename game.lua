@@ -4,6 +4,8 @@ M.files     = {
 	"lib/littlejs.min.js",
 	"lib/vivus.min.js",
 	"lib/fishdraw.browser.js",
+	"js/fish-piece.js",
+	"js/hexboard.js",
 	"js/game.js",
 	"js/ui.js",
 }
@@ -19,7 +21,7 @@ M.libraries = {
 }
 
 M.output    = "dist/index.html"
-M.inits     = { "gameInit", "gameUpdate", "null", "gameRender", "postGameRender" }
+M.inits     = { "gameInit", "gameUpdate", "gameUpdatePost", "gameRender", .worldPostGameRender" }
 
 M.publish   = false
 M.channel   = "aquarock/angel-game:html5"
