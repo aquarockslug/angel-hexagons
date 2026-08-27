@@ -2,7 +2,7 @@ let board = [];
 let placedPieces = [];
 let fish = []; // the pile of unplaced fish pieces; the last one is the "top"
 
-const MAXFISH = 7;
+const MAXFISH = 8;
 
 function positionFishPiece(el, hole) {
 	const screenPos = worldToScreen(hole.worldPos);
@@ -113,19 +113,49 @@ function gameInit() {
 function moveAngel(distance = 1) {
 	// find and clear the current angel
 	let angelHole = board.filter((h) => h.value.type == "angel")[0];
+	if (!angelHole) return;
 	angelHole.value.type = "none";
 
-	// look for empty neighbors to jump to
-	let validMoves = neighbors(board, angelHole, 2).filter(
+	// look for empty neighbors to jump to (angel has power = distance)
+	let validMoves = neighbors(board, angelHole, distance).filter(
 		(n) => n.hole.value.type == "none",
 	);
 
-	// randomly pick a valid move
-	validMoves[randInt(validMoves.length)].hole.value.type = "angel";
+	if (validMoves.length === 0) {
+		// no escape: the angel is trapped, leave it where it was
+		angelHole.value.type = "angel";
+		return;
+	}
+
+	const edgeRadius = board.reduce(
+		(m, h) => Math.max(m, h.worldPos.length()),
+		0,
+	);
+
+	const score = (m) => {
+		const dist = m.hole.worldPos.length();
+		const toEdge = edgeRadius - dist; // smaller = closer to winning
+		const mobility = neighbors(board, m.hole, distance).filter(
+			(n) => n.hole.value.type == "none",
+		).length;
+		// weight reaching the edge far above mere mobility
+		return (edgeRadius - toEdge) * 1000 + mobility * 10;
+	};
+
+	validMoves.sort((a, b) => score(b) - score(a));
+	validMoves[0].hole.value.type = "angel";
+
+	// winning condition: the angel reached the outside edge of the board
+	if (validMoves[0].hole.worldPos.length() >= edgeRadius - 0.5) {
+		onAngelEscaped();
+	}
 }
 
 function resetGame() {
-	board = boardInit(MAXFISH);
+	board = boardInit(7);
+	board[Math.floor(board.length / 2)].value = { type: "angel" };
+	if (typeof uiAngelBanner !== "undefined" && uiAngelBanner)
+		uiAngelBanner.visible = false;
 }
 
 function gameUpdate() {}

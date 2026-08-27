@@ -4,7 +4,7 @@
 // dialog with a Guides toggle, a Speed slider, a Reset button, and a Close
 // button. The engine is paused while the dialog is open and Escape toggles it.
 
-let uiRoot, uiSettings;
+let uiRoot, uiSettings, uiAngelBanner;
 
 // UI theme colors (shared with star-checkers)
 const GOLD = new Color().setHex("#ffd76a");
@@ -67,6 +67,17 @@ function setupUI() {
 
 	uiRoot = new UIObject();
 	uiRoot.anchor = vec2(-1, -1);
+
+	// angel victory banner (hidden until the angel reaches the edge)
+	uiAngelBanner = new UIText(
+		vec2(canvasFixedSize.x / 2, canvasFixedSize.y / 2),
+		vec2(560, 60),
+		"The angel escaped!",
+	);
+	uiAngelBanner.textColor = GOLD;
+	uiAngelBanner.textLineWidth = 6;
+	uiAngelBanner.visible = false;
+	uiRoot.addChild(uiAngelBanner);
 
 	// menu button (upper-right corner)
 	const menuButton = new UIButton(
@@ -171,6 +182,11 @@ function toggleSettings() {
 
 function setUIVisible(visible) {
 	uiRoot.visible = visible;
+}
+
+function onAngelEscaped() {
+	if (uiAngelBanner) uiAngelBanner.visible = true;
+	alert("The angelfish escaped!");
 }
 
 function gameUpdatePost() {

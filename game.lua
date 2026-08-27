@@ -21,7 +21,7 @@ M.libraries = {
 }
 
 M.output    = "dist/index.html"
-M.inits     = { "gameInit", "gameUpdate", "gameUpdatePost", "gameRender", .worldPostGameRender" }
+M.inits     = { "gameInit", "gameUpdate", "gameUpdatePost", "gameRender", "postGameRender" }
 
 M.publish   = false
 M.channel   = "aquarock/angel-game:html5"
