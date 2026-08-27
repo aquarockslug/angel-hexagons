@@ -42,7 +42,7 @@ function placeFish(hole) {
 		].filter(Boolean);
 
 	diamond.forEach((h) => {
-		h.value = { obstacle: "FISH" };
+		h.value = { type: "obstacle" };
 	});
 
 	sfx.place.play();
@@ -59,17 +59,13 @@ function gameInit() {
 	positionPile();
 	selectTop();
 
-	// Frame the camera so the circular board fills the view.
 	cameraPos = vec2(0, 0);
 	cameraScale = 32;
-
-	// Build the hexagonal board system.
-	board = boardInit(7);
-
-	// Set up the UI (menu button + settings panel).
 	setupUI();
 
-	// keep the pile glued to its corner when the view (resize) changes
+	board = boardInit(7);
+	board[Math.floor(board.length / 2)].value = { type: "angel" };
+
 	window.addEventListener("resize", positionPile);
 
 	function moveFishPieceToHole(el, hole) {
@@ -121,6 +117,10 @@ function gameRender() {
 	drawBoardPlate(board);
 	for (const h of board) {
 		if (Object.keys(h.value).length === 0) drawHole(h.worldPos);
+		if (h.value.type == "angel") {
+			drawHole(h.worldPos);
+			drawCircle(h.worldPos, 0.75);
+		}
 	}
 
 	// keep placed pieces glued to their holes as the view (camera/resize) changes
