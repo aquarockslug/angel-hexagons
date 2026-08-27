@@ -83,7 +83,7 @@ function startGame() {
 	gameStarted = true;
 
 	fish = initPile();
-	selectTop();
+	setTimeout(selectTop, 100 * fish.length);
 
 	board = boardInit(7);
 	board[Math.floor(board.length / 2)].value = { type: "angel" };
@@ -95,7 +95,7 @@ function startGame() {
 	window.addEventListener("resize", positionPile);
 	// re-anchor the animated angel to its hole so it tracks view changes
 	window.addEventListener("resize", () => {
-		const ah = board.filter((h) => h.value.type == "angel")[0];
+		const ah = board.filter((h) => h.value.type === "angel")[0];
 		if (ah) {
 			angelPos = ah.worldPos;
 			angelTarget = ah.worldPos;

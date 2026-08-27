@@ -38,6 +38,7 @@
 			this.attachShadow({ mode: "open" });
 			this._fish = null;
 			this._vivus = null;
+			this._shouldPlay = false;
 			this._renderKey = "";
 		}
 
@@ -48,12 +49,8 @@
 
 		attributeChangedCallback(name) {
 			if (!this.isConnected) return;
-			// Selection is handled purely by CSS, so it doesn't need a re-render
-			// (and would otherwise re-trigger the fish animation on every click).
-			if (name === "selected") return;
-			// Playing the piece triggers the fish drawing animation.
-			if (name === "played") {
-				this.playFish();
+			if (name === "selected") {
+				if (this.hasAttribute("selected")) this.playFish();
 				return;
 			}
 			this.render();
@@ -108,11 +105,14 @@
           </svg>
         </div>`;
 
-			this.animateFish();
+			// Defer Vivus creation to the next frame so the SVG is laid out and
+			// getTotalLength() returns a real length (otherwise the path can be
+			// measured as 0 and the draw finishes instantly with no animation).
+			requestAnimationFrame(() => this.animateFish());
 		}
 
 		// Build the Vivus instance in manual mode: the fish path is hidden until
-		// the piece is played (see playFish). Pieces stay blank in the pile.
+		// the piece is played/selected (see playFish). Pieces stay blank otherwise.
 		animateFish() {
 			if (typeof Vivus === "undefined") return;
 			if (this._vivus) {
@@ -127,11 +127,12 @@
 				start: "manual",
 				ignoreInvisible: true,
 			});
-			// If the piece was already played before a re-render, redraw it.
-			if (this.hasAttribute("played")) this._vivus.play();
+			// If the piece was already activated before the SVG was ready, draw it.
+			if (this._shouldPlay) this.playFish();
 		}
 
 		playFish() {
+			this._shouldPlay = true;
 			if (this._vivus) this._vivus.play();
 		}
 

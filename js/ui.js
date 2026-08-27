@@ -24,9 +24,7 @@ let sfx = {
 
 function initPile(amount = 8) {
 	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
-	setTimeout(() => {
-		positionPile();
-	}, 100);
+	setTimeout(positionPile, 100);
 	return Array.from(Array(amount)).map((_) => addFishPiece(bright));
 }
 
