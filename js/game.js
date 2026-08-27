@@ -1,8 +1,10 @@
+// Angelfish
+// hexagonal angel problem game
+// the player plays as the devil by placing fish pieces to block the angels path
+
 let board = [];
 let placedPieces = [];
 let fish = []; // the pile of unplaced fish pieces; the last one is the "top"
-
-const MAXFISH = 8;
 
 function positionFishPiece(el, hole) {
 	const screenPos = worldToScreen(hole.worldPos);
@@ -57,7 +59,7 @@ function gameInit() {
 	fishdraw.main(Date.now().toString());
 
 	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
-	fish = Array.from(Array(MAXFISH)).map((_) => addFishPiece(bright));
+	fish = Array.from(Array(6)).map((_) => addFishPiece(bright));
 	positionPile();
 	selectTop();
 
@@ -139,7 +141,7 @@ function moveAngel(distance = 1) {
 			(n) => n.hole.value.type == "none",
 		).length;
 		// weight reaching the edge far above mere mobility
-		return (edgeRadius - toEdge) * 1000 + mobility * 10;
+		return (edgeRadius - toEdge) * 100 + mobility * 100;
 	};
 
 	validMoves.sort((a, b) => score(b) - score(a));

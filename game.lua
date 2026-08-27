@@ -1,5 +1,7 @@
 local M     = {}
 
+M.title     = "Angelfish"
+
 M.files     = {
 	"lib/littlejs.min.js",
 	"lib/vivus.min.js",
