@@ -16,6 +16,11 @@ let MOVEGUIDES = false;
 let CPU_MOVE_DELAY = 1;
 const ANIMATION_SPEED = { CPU_DURATION: 7, HUMAN_DURATION: 14 };
 
+// biome-ignore format: sfx
+let sfx = {
+	place: new Sound([2.3,,989,.27,.05,.01,1,2,,69,-2,.22,.04,,,.6,.22,.64,.12]),
+};
+
 function positionPile() {
 	const scale = 250;
 	const w = scale;

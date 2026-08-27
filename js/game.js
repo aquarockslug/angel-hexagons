@@ -16,9 +16,6 @@ function addFishPiece(opts = {}) {
 	if (opts.border) el.setAttribute("border", opts.border);
 	if (opts.scale) el.setAttribute("scale", opts.scale);
 	el.style.pointerEvents = "none";
-	el.addEventListener("fish-select", (e) => {
-		console.log("fish selected:", e.detail);
-	});
 	document.body.appendChild(el);
 	return el;
 }
@@ -34,8 +31,7 @@ function placeFish(hole) {
 		return m ? m.hole : null;
 	};
 
-	const left = dir(hole, -1, 0);
-	const right = dir(hole, 1, 0);
+	const [left, right] = [dir(hole, -1, 0), dir(hole, 1, 0)];
 	const right2 = dir(right, 1, 0);
 
 	// biome-ignore format: two rows of three above/below a middle row of four
@@ -48,6 +44,8 @@ function placeFish(hole) {
 	diamond.forEach((h) => {
 		h.value = { obstacle: "FISH" };
 	});
+
+	sfx.place.play();
 
 	return diamond;
 }
@@ -79,7 +77,6 @@ function gameInit() {
 		el._holeCoords = hole.coords;
 		if (!placedPieces.includes(el)) placedPieces.push(el);
 
-		// el.setAttribute("scale", (HOLESIZE * cameraScale * 7.5).toFixed(0));
 		Object.assign(el.style, {
 			position: "fixed",
 			left: "0",
