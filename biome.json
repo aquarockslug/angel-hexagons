@@ -26,6 +26,10 @@
 			},
 			"correctness": {
 				"noUnusedVariables": "off"
+			},
+			"suspicious": {
+				"noSparseArray": "off",
+				"noDoubleEquals": "off"
 			}
 		}
 	},
