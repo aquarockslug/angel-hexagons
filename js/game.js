@@ -10,7 +10,7 @@ function positionFishPiece(el, hole) {
 	const screenPos = worldToScreen(hole.worldPos);
 	const w = el.offsetWidth;
 	const h = el.offsetHeight;
-	el.style.transform = `translate(${(screenPos.x - w / 2.6).toFixed(1)}px, ${(screenPos.y - h / 2).toFixed(1)}px)`;
+	el.style.transform = `translate(${(screenPos.x - w / 2.65).toFixed(1)}px, ${(screenPos.y - h / 2).toFixed(1)}px)`;
 }
 
 function addFishPiece(opts = {}) {
@@ -58,9 +58,7 @@ function gameInit() {
 	// Seed fishdraw, each <fish-piece> pulls a fish from this RNG.
 	fishdraw.main(Date.now().toString());
 
-	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
-	fish = Array.from(Array(6)).map((_) => addFishPiece(bright));
-	positionPile();
+	fish = initPile();
 	selectTop();
 
 	cameraPos = vec2(0, 0);
@@ -141,7 +139,7 @@ function moveAngel(distance = 1) {
 			(n) => n.hole.value.type == "none",
 		).length;
 		// weight reaching the edge far above mere mobility
-		return (edgeRadius - toEdge) * 100 + mobility * 100;
+		return (edgeRadius - toEdge) * 1000 + mobility * 10;
 	};
 
 	validMoves.sort((a, b) => score(b) - score(a));
@@ -158,6 +156,8 @@ function resetGame() {
 	board[Math.floor(board.length / 2)].value = { type: "angel" };
 	if (typeof uiAngelBanner !== "undefined" && uiAngelBanner)
 		uiAngelBanner.visible = false;
+	document.querySelectorAll("fish-piece").forEach((el) => el.remove());
+	fish = initPile();
 }
 
 function gameUpdate() {}
@@ -167,6 +167,9 @@ function gameRender() {
 	for (const h of board) {
 		if (Object.keys(h.value).length === 0 || h.value.type == "none")
 			drawHole(h.worldPos);
+		if (h.value.type == "obstacle") {
+			drawBlockedHex(h.worldPos);
+		}
 		if (h.value.type == "angel") {
 			drawHole(h.worldPos);
 			drawCircle(h.worldPos, 0.75);

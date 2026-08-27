@@ -10,6 +10,9 @@ const PLATECOLOR = new Color().setHex("#232b47");
 const PLATEEDGE = new Color().setHex("#414e7d");
 const HOLECOLOR = PLATECOLOR; //new Color().setHex("#0d1122");
 
+// obstacle color
+const BLOCKCOLOR = new Color().setHex("#5b3a78"); // a solid "wall" peg
+
 // ---- color helpers ----
 const shade = (c, t) => new Color(c.r * (1 - t), c.g * (1 - t), c.b * (1 - t));
 
@@ -93,4 +96,9 @@ const drawBoardPlate = (board) => {
 // draw a single hole on the board
 const drawHole = (pos) => {
 	drawCircle(pos, HOLESIZE, HOLECOLOR, 0.08, PLATEEDGE);
+};
+
+// draw a solid "wall" peg on a blocked hole so obstacles read clearly
+const drawBlockedHex = (pos) => {
+	drawCircle(pos, 0.62, BLOCKCOLOR, 1, PLATEEDGE, 0.08);
 };

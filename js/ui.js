@@ -21,6 +21,15 @@ let sfx = {
 	place: new Sound([2.3,,989,.27,.05,.01,1,2,,69,-2,.22,.04,,,.6,.22,.64,.12]),
 };
 
+function initPile(amount = 8) {
+	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
+	setTimeout(() => {
+		sfx.place.play();
+		positionPile();
+	}, 100);
+	return Array.from(Array(amount)).map((_) => addFishPiece(bright));
+}
+
 function positionPile() {
 	const scale = 250;
 	const w = scale;
@@ -31,20 +40,22 @@ function positionPile() {
 	const baseY = window.innerHeight - h - 30;
 
 	fish.forEach((el, i) => {
-		el.setAttribute("scale", scale);
-		Object.assign(el.style, {
-			position: "fixed",
-			left: "0",
-			top: "0",
-			margin: "0",
-			pointerEvents: "none",
-			zIndex: String(20 + i),
-			transition: "transform 180ms ease",
-		});
-		const x = baseX + i * offsetX;
-		const y = baseY + i * offsetY;
-		const rot = (i - fish.length / 2) * 3;
-		el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+		setTimeout(() => {
+			el.setAttribute("scale", scale);
+			Object.assign(el.style, {
+				position: "fixed",
+				left: "0",
+				top: "0",
+				margin: "0",
+				pointerEvents: "none",
+				zIndex: String(20 + i),
+				transition: "transform 180ms ease",
+			});
+			const x = baseX + i * offsetX;
+			const y = baseY + i * offsetY;
+			const rot = (i - fish.length / 2) * 3;
+			el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+		}, i * 100);
 	});
 }
 
