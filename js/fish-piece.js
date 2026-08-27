@@ -50,8 +50,7 @@
 
 		ensureFish() {
 			// TODO modify the generated params so that the fish are easier to draw
-			if (!this._fish)
-				this._fish = fishdraw.fish(fishdraw.generate_params());
+			if (!this._fish) this._fish = fishdraw.fish(fishdraw.generate_params());
 			return this._fish;
 		}
 

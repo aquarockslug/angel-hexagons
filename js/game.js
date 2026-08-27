@@ -2,6 +2,8 @@ let board = [];
 let placedPieces = [];
 let fish = []; // the pile of unplaced fish pieces; the last one is the "top"
 
+const MAXFISH = 7;
+
 function positionFishPiece(el, hole) {
 	const screenPos = worldToScreen(hole.worldPos);
 	const w = el.offsetWidth;
@@ -55,12 +57,12 @@ function gameInit() {
 	fishdraw.main(Date.now().toString());
 
 	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
-	fish = Array.from(Array(6)).map((_) => addFishPiece(bright));
+	fish = Array.from(Array(MAXFISH)).map((_) => addFishPiece(bright));
 	positionPile();
 	selectTop();
 
 	cameraPos = vec2(0, 0);
-	cameraScale = 32;
+	cameraScale = 34;
 	setupUI();
 
 	board = boardInit(7);
@@ -98,17 +100,32 @@ function gameInit() {
 		const target = placeFish(nearestHole(board, vec2(pos.x, pos.y)));
 		if (!target) return;
 
-		// place & deselect the top fish, then promote the next one
+		// place and deselect the top fish, then promote the next one
 		top.removeAttribute("selected");
 		fish.pop();
 		moveFishPieceToHole(top, target[1] ?? target[0]);
 		positionPile();
+		moveAngel();
 		selectTop();
 	});
 }
 
+function moveAngel(distance = 1) {
+	// find and clear the current angel
+	let angelHole = board.filter((h) => h.value.type == "angel")[0];
+	angelHole.value.type = "none";
+
+	// look for empty neighbors to jump to
+	let validMoves = neighbors(board, angelHole, 2).filter(
+		(n) => n.hole.value.type == "none",
+	);
+
+	// randomly pick a valid move
+	validMoves[randInt(validMoves.length)].hole.value.type = "angel";
+}
+
 function resetGame() {
-	board = boardInit(7);
+	board = boardInit(MAXFISH);
 }
 
 function gameUpdate() {}
@@ -116,7 +133,8 @@ function gameUpdate() {}
 function gameRender() {
 	drawBoardPlate(board);
 	for (const h of board) {
-		if (Object.keys(h.value).length === 0) drawHole(h.worldPos);
+		if (Object.keys(h.value).length === 0 || h.value.type == "none")
+			drawHole(h.worldPos);
 		if (h.value.type == "angel") {
 			drawHole(h.worldPos);
 			drawCircle(h.worldPos, 0.75);

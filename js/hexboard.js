@@ -14,7 +14,7 @@ const HOLECOLOR = PLATECOLOR; //new Color().setHex("#0d1122");
 const shade = (c, t) => new Color(c.r * (1 - t), c.g * (1 - t), c.b * (1 - t));
 
 // creates a hexagonal hole with axial coordinates and world position
-const hole = (q, r, value = {}) => {
+const hole = (q, r, value = { type: "none" }) => {
 	const x = (q + r * 0.5) * BOARDSIZE;
 	const y = ((r * Math.sqrt(3)) / 2) * BOARDSIZE;
 	return {
