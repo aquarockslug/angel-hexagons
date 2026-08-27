@@ -14,19 +14,14 @@
 			const a = (i * Math.PI) / 3;
 			pts.push([cx + Math.cos(a) * rx, cy + Math.sin(a) * ry]);
 		}
-		return pts.map((p) => p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" ");
+		return pts.map((p) => `${p[0].toFixed(2)},${p[1].toFixed(2)}`).join(" ");
 	}
 
 	function fishToPath(polylines) {
 		let d = "";
 		for (const line of polylines) {
 			line.forEach(([x, y], j) => {
-				d +=
-					(j ? "L " : "M ") +
-					(x + 10).toFixed(2) +
-					" " +
-					(y + 10).toFixed(2) +
-					" ";
+				d += `${j ? "L" : "M"} ${(x + 10).toFixed(2)} ${(y + 10).toFixed(2)} `;
 			});
 			d += " ";
 		}
@@ -55,12 +50,9 @@
 
 		ensureFish() {
 			// TODO modify the generated params so that the fish are easier to draw
-			return (this._fish ||= fishdraw.fish(fishdraw.generate_params()));
-		}
-
-		regenerate() {
-			this._fish = null;
-			this.render();
+			if (!this._fish)
+				this._fish = fishdraw.fish(fishdraw.generate_params());
+			return this._fish;
 		}
 
 		render() {
@@ -70,7 +62,8 @@
 			const scale = parseFloat(this.getAttribute("scale") || "180");
 			const selected = this.hasAttribute("selected");
 
-			const clipId = "fish-clip-" + clipCounter++;
+			const clipId = `fish-clip-${clipCounter}`;
+			clipCounter++;
 			const poly = hexagon(260, 160, 244, 150);
 			const d = fishToPath(this.ensureFish());
 

@@ -1,23 +1,17 @@
 // Hexagonal board system
 
 // ---- board sizing ----
-const HOLESIZE = 1.35;
-const BOARDSIZE = 1.5; // the space between holes
+const HOLESIZE = 1;
+const BOARDSIZE = 1.85; // the space between holes
 const PLATE_MARGIN = 2.0; // the space around the outside of the holes
 
 // ---- palette (board only) ----
 const PLATECOLOR = new Color().setHex("#232b47");
 const PLATEEDGE = new Color().setHex("#414e7d");
-const HOLECOLOR = new Color().setHex("#0d1122");
+const HOLECOLOR = PLATECOLOR; //new Color().setHex("#0d1122");
 
 // ---- color helpers ----
-const mix = (a, b, t) =>
-	new Color(
-		a.r + (b.r - a.r) * t,
-		a.g + (b.g - a.g) * t,
-		a.b + (b.b - a.b) * t,
-	);
-const shade = (c, t) => mix(c, BLACK, t);
+const shade = (c, t) => new Color(c.r * (1 - t), c.g * (1 - t), c.b * (1 - t));
 
 // creates a hexagonal hole with axial coordinates and world position
 const hole = (q, r, value = {}) => {
@@ -40,36 +34,20 @@ window.addEventListener("resize", (_) => {
 // returns { direction: { q, r }, hole } so the caller knows the direction of the neighbor
 const neighbors = (board, h, distance = 1) => {
 	const { q, r } = h.coords;
-	const neighborCoords = [
-		{ q: q + distance, r: r, direction: { q: distance, r: 0 } }, // right
-		{ q: q, r: r + distance, direction: { q: 0, r: distance } }, // down-right
-		{ q: q - distance, r: r, direction: { q: -distance, r: 0 } }, // left
-		{
-			q: q + distance,
-			r: r - distance,
-			direction: { q: distance, r: -distance },
-		}, // up-right
-		{ q: q, r: r - distance, direction: { q: 0, r: -distance } }, // up-left
-		{
-			q: q - distance,
-			r: r + distance,
-			direction: { q: -distance, r: distance },
-		}, // down-left
+	const dirs = [
+		[distance, 0],
+		[0, distance],
+		[-distance, 0],
+		[distance, -distance],
+		[0, -distance],
+		[-distance, distance],
 	];
-
-	return neighborCoords
-		.map((coord) => ({
-			direction: coord.direction,
-			hole: board.find((h) => h.coords.q === coord.q && h.coords.r === coord.r),
+	return dirs
+		.map(([dq, dr]) => ({
+			direction: { q: dq, r: dr },
+			hole: board.find((h) => h.coords.q === q + dq && h.coords.r === r + dr),
 		}))
 		.filter((n) => n.hole !== undefined);
-};
-
-// hex distance between two holes (axial -> cube conversion)
-const holeDistance = (hole1, hole2) => {
-	const { q: q1, r: r1, s: s1 } = hole1.coords;
-	const { q: q2, r: r2, s: s2 } = hole2.coords;
-	return Math.max(Math.abs(q1 - q2), Math.abs(r1 - r2), Math.abs(s1 - s2));
 };
 
 // nearest hole on the board to a given world position
@@ -114,6 +92,5 @@ const drawBoardPlate = (board) => {
 
 // draw a single hole on the board
 const drawHole = (pos) => {
-	drawCircle(pos, HOLESIZE + 0.07, shade(PLATECOLOR, 0.5));
 	drawCircle(pos, HOLESIZE, HOLECOLOR, 0.08, PLATEEDGE);
 };

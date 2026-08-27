@@ -6,7 +6,7 @@ function positionFishPiece(el, hole) {
 	const screenPos = worldToScreen(hole.worldPos);
 	const w = el.offsetWidth;
 	const h = el.offsetHeight;
-	el.style.transform = `translate(${(screenPos.x - w / 2).toFixed(1)}px, ${(screenPos.y - h / 2).toFixed(1)}px)`;
+	el.style.transform = `translate(${(screenPos.x - w / 2.6).toFixed(1)}px, ${(screenPos.y - h / 2).toFixed(1)}px)`;
 }
 
 function addFishPiece(opts = {}) {
@@ -15,7 +15,6 @@ function addFishPiece(opts = {}) {
 	if (opts.fill) el.setAttribute("fill", opts.fill);
 	if (opts.border) el.setAttribute("border", opts.border);
 	if (opts.scale) el.setAttribute("scale", opts.scale);
-	// the pile is purely visual; all interaction goes through the board
 	el.style.pointerEvents = "none";
 	el.addEventListener("fish-select", (e) => {
 		console.log("fish selected:", e.detail);
@@ -39,8 +38,7 @@ function placeFish(hole) {
 	const right = dir(hole, 1, 0);
 	const right2 = dir(right, 1, 0);
 
-	// diamond: two rows of three above/below a middle row of four
-	// biome-ignore format: coordinates
+	// biome-ignore format: two rows of three above/below a middle row of four
 	const diamond = [
 			left, hole, right, right2, // middle row (4)
 			dir(hole, -1, 1), dir(hole, 1, -1), dir(right, 1, -1), // top row (3)
@@ -59,17 +57,16 @@ function gameInit() {
 	fishdraw.main(Date.now().toString());
 
 	let bright = { ink: "#3a1f4d", fill: "#e7f0ff", border: "#6c5ce7" };
-	fish = Array.from(Array(3)).map((_) => addFishPiece(bright));
+	fish = Array.from(Array(6)).map((_) => addFishPiece(bright));
 	positionPile();
 	selectTop();
-	window.fish = fish;
 
 	// Frame the camera so the circular board fills the view.
 	cameraPos = vec2(0, 0);
 	cameraScale = 32;
 
 	// Build the hexagonal board system.
-	board = boardInit(10);
+	board = boardInit(7);
 
 	// Set up the UI (menu button + settings panel).
 	setupUI();
@@ -82,15 +79,17 @@ function gameInit() {
 		el._holeCoords = hole.coords;
 		if (!placedPieces.includes(el)) placedPieces.push(el);
 
-		el.setAttribute("scale", (HOLESIZE * cameraScale * 5).toFixed(0));
-		el.style.position = "fixed";
-		el.style.left = "0";
-		el.style.top = "0";
-		el.style.margin = "0";
-		el.style.pointerEvents = "none";
-		el.style.zIndex = "15";
+		// el.setAttribute("scale", (HOLESIZE * cameraScale * 7.5).toFixed(0));
+		Object.assign(el.style, {
+			position: "fixed",
+			left: "0",
+			top: "0",
+			margin: "0",
+			pointerEvents: "none",
+			zIndex: "15",
+			transition: "transform 350ms cubic-bezier(.2,.8,.2,1)",
+		});
 		// animate the move, then drop the transition so it can follow the board
-		el.style.transition = "transform 350ms cubic-bezier(.2,.8,.2,1)";
 		el.addEventListener("transitionend", () => (el.style.transition = "none"), {
 			once: true,
 		});
@@ -116,7 +115,7 @@ function gameInit() {
 }
 
 function resetGame() {
-	board = boardInit(10);
+	board = boardInit(7);
 }
 
 function gameUpdate() {}
@@ -124,8 +123,7 @@ function gameUpdate() {}
 function gameRender() {
 	drawBoardPlate(board);
 	for (const h of board) {
-		drawHole(h.worldPos);
-		if (Object.keys(h.value).length > 0) drawCircle(h.worldPos, 1);
+		if (Object.keys(h.value).length === 0) drawHole(h.worldPos);
 	}
 
 	// keep placed pieces glued to their holes as the view (camera/resize) changes

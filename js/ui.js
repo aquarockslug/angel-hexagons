@@ -13,12 +13,11 @@ const GOLDDEEP = new Color().setHex("#c98a1b");
 
 // UI-controlled settings (kept local to the UI so no game logic is required)
 let MOVEGUIDES = false;
-let GOALGUIDE = false;
 let CPU_MOVE_DELAY = 1;
 const ANIMATION_SPEED = { CPU_DURATION: 7, HUMAN_DURATION: 14 };
 
 function positionPile() {
-	const scale = 150;
+	const scale = 250;
 	const w = scale;
 	const h = (scale * 320) / 520;
 	const offsetX = 18;
@@ -28,13 +27,15 @@ function positionPile() {
 
 	fish.forEach((el, i) => {
 		el.setAttribute("scale", scale);
-		el.style.position = "fixed";
-		el.style.left = "0";
-		el.style.top = "0";
-		el.style.margin = "0";
-		el.style.pointerEvents = "none";
-		el.style.zIndex = String(20 + i);
-		el.style.transition = "transform 180ms ease";
+		Object.assign(el.style, {
+			position: "fixed",
+			left: "0",
+			top: "0",
+			margin: "0",
+			pointerEvents: "none",
+			zIndex: String(20 + i),
+			transition: "transform 180ms ease",
+		});
 		const x = baseX + i * offsetX;
 		const y = baseY + i * offsetY;
 		const rot = (i - fish.length / 2) * 3;
@@ -43,7 +44,9 @@ function positionPile() {
 }
 
 function selectTop() {
-	fish.forEach((f) => f.removeAttribute("selected"));
+	fish.forEach((f) => {
+		f.removeAttribute("selected");
+	});
 	const top = fish[fish.length - 1];
 	if (top) top.setAttribute("selected", "");
 }
@@ -99,7 +102,6 @@ function setupUI() {
 	guidesCheck.textColor = SANDLIGHTBROWN;
 	guidesCheck.onChange = () => {
 		MOVEGUIDES = guidesCheck.checked;
-		GOALGUIDE = guidesCheck.checked;
 	};
 	uiSettings.addChild(guidesCheck);
 
