@@ -97,22 +97,19 @@
             <defs><clipPath id="${clipId}"><polygon points="${poly}"/></clipPath></defs>
             <g clip-path="url(#${clipId})">
               <rect width="520" height="320" fill="${fill}" data-ignore="true"/>
-              <path d="${d}" fill="none" stroke="${ink}" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round"/>
+              <g transform="translate(260 160) scale(0.65) translate(-260 -160)">
+                <path d="${d}" fill="none" stroke="${ink}" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
             </g>
             <polygon class="frame" points="${poly}" fill="none" stroke="${border}"
                      stroke-linejoin="round" data-ignore="true"/>
           </svg>
         </div>`;
-
-			// Defer Vivus creation to the next frame so the SVG is laid out and
-			// getTotalLength() returns a real length (otherwise the path can be
-			// measured as 0 and the draw finishes instantly with no animation).
-			requestAnimationFrame(() => this.animateFish());
+			// this.animateFish();
 		}
 
-		// Build the Vivus instance in manual mode: the fish path is hidden until
-		// the piece is played/selected (see playFish). Pieces stay blank otherwise.
+		// WARN the svg fish is appearing but there is no animation
 		animateFish() {
 			if (typeof Vivus === "undefined") return;
 			if (this._vivus) {
@@ -131,6 +128,8 @@
 			if (this._shouldPlay) this.playFish();
 		}
 
+		// Reveal the fish by playing the Vivus draw animation. Pieces stay blank
+		// in the pile until the player selects them.
 		playFish() {
 			this._shouldPlay = true;
 			if (this._vivus) this._vivus.play();

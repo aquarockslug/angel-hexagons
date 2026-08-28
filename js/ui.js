@@ -8,18 +8,13 @@ let uiRoot, uiSettings, uiAngelBanner, uiMenu;
 
 // UI theme colors (shared with star-checkers)
 const GOLD = new Color().setHex("#ffd76a");
-const SANDLIGHTBROWN = new Color(0.97, 0.88, 0.63);
 const GOLDDEEP = new Color().setHex("#c98a1b");
-
-// UI-controlled settings (kept local to the UI so no game logic is required)
-let MOVEGUIDES = false;
-let CPU_MOVE_DELAY = 1;
-const ANIMATION_SPEED = { CPU_DURATION: 7, HUMAN_DURATION: 14 };
 
 // biome-ignore format: sfx
 let sfx = {
 	place: new Sound([,,343,.03,.28,.24,1,1.5,-1,,-94,.15,,,,,,.98,.28]),
-	draw: new Sound([.8,,162,.02,.03,.09,1,.3,,-19,-50,,,.4,-1,,,.61,.04,,99])
+	draw: new Sound([.8,,162,.02,.03,.09,1,.3,,-19,-50,,,.4,-1,,,.61,.04,,99]),
+	break: new Sound([1.5,,200,.01,.17,.08,5,1.7105017413624268,-14,-11,,,,,,,.13,.87,.06]),
 };
 
 function initPile(amount = 8) {
@@ -83,7 +78,7 @@ function setupUI() {
 	uiAngelBanner = new UIText(
 		vec2(mainCanvasSize.x / 2, mainCanvasSize.y / 2),
 		vec2(560, 60),
-		"The angel escaped!",
+		"The angelfish escaped!",
 	);
 	uiAngelBanner.textColor = GOLD;
 	uiAngelBanner.textLineWidth = 6;
@@ -152,7 +147,11 @@ function setupUI() {
 	uiMenu.canBeHover = false;
 	uiRoot.addChild(uiMenu);
 
-	const menuTitle = new UIText(vec2(0, -70), vec2(560, 90), "Angelfish");
+	const menuTitle = new UIText(
+		vec2(0, -70),
+		vec2(560, 90),
+		"Angelfish Problem",
+	);
 	menuTitle.textColor = GOLD;
 	menuTitle.textLineWidth = 6;
 	uiMenu.addChild(menuTitle);
@@ -162,7 +161,7 @@ function setupUI() {
 		vec2(440, 30),
 		"Place fish to block the angel's escape.",
 	);
-	menuSubtitle.textColor = SANDLIGHTBROWN;
+	menuSubtitle.textColor = GOLD;
 	menuSubtitle.textLineWidth = 2;
 	uiMenu.addChild(menuSubtitle);
 

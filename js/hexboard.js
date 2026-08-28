@@ -36,6 +36,7 @@ window.addEventListener("resize", (_) => {
 // finds the six neighboring holes (optionally at a given distance)
 // returns { direction: { q, r }, hole } so the caller knows the direction of the neighbor
 const neighbors = (board, h, distance = 1) => {
+	if (!h?.coords) return;
 	const { q, r } = h.coords;
 	const dirs = [
 		[distance, 0],
@@ -58,7 +59,11 @@ const nearestHole = (board, pos, threshold = 25) => {
 	let hole = board.reduce((nearest, h) =>
 		h.screenPos.distance(pos) < nearest.screenPos.distance(pos) ? h : nearest,
 	);
-	return hole.screenPos.distance(pos) <= threshold ? hole : undefined;
+	if (hole.screenPos.distance(pos) > threshold) {
+		sfx.break.play();
+		return null;
+	}
+	return hole;
 };
 
 // initialize a circular hexagonal board of the given radius

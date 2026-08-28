@@ -8,6 +8,7 @@ M.files     = {
 	"lib/fishdraw.browser.js",
 	"js/fish-piece.js",
 	"js/hexboard.js",
+	"js/background.js",
 	"js/game.js",
 	"js/ui.js",
 }

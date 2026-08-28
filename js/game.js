@@ -39,7 +39,7 @@ function placeFish(hole) {
 
 	// 'hole' is treated as the second hole of the middle row
 	const dir = (from, dq, dr) => {
-		const m = neighbors(board, from).find(
+		const m = neighbors(board, from)?.find(
 			(n) => n.direction.q === dq && n.direction.r === dr,
 		);
 		return m ? m.hole : null;
@@ -54,6 +54,15 @@ function placeFish(hole) {
 			dir(hole, -1, 1), dir(hole, 1, -1), dir(right, 1, -1), // top row (3)
 			dir(hole, 0, -1), dir(hole, 0, 1), dir(right, 0, 1), // bottom row (3)
 		].filter(Boolean);
+
+	if (
+		diamond.filter(
+			(h) => h?.value?.type == "angel" || h?.value?.type == "obstacle",
+		).length
+	) {
+		sfx.break.play();
+		return;
+	}
 
 	diamond.forEach((h) => {
 		h.value = { type: "obstacle" };
